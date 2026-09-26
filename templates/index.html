@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="OG, ABV, pH ve IBU değerleriyle bira sınıfı tahmini yapın."
+    />
+    <title>Bira Sınıflandırıcı</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero">
+        <div class="eyebrow"><span></span> Yapay zekâ destekli</div>
+        <h1>Biranın karakterini<br /><em>dört değerle</em> keşfet.</h1>
+        <p class="intro">
+          Temel bira ölçümlerini gir; model, en olası sınıfı ve güven oranını
+          saniyeler içinde hesaplasın.
+        </p>
+      </section>
+
+      <section class="predictor-card" aria-labelledby="form-title">
+        <div class="card-heading">
+          <div>
+            <p class="step">01 / Değerleri gir</p>
+            <h2 id="form-title">Bira profili</h2>
+          </div>
+          <div class="status {{ 'ready' if model_ready else 'waiting' }}">
+            <span></span>{{ 'Model hazır' if model_ready else 'Model bekleniyor' }}
+          </div>
+        </div>
+
+        <form id="prediction-form">
+          <div class="field-grid">
+            <label class="field">
+              <span class="field-top"><strong>OG</strong><small>Başlangıç şeker yoğunluğu</small></span>
+              <input name="og" type="number" min="0.001" max="2" step="0.001" value="1.050" required />
+            </label>
+            <label class="field">
+              <span class="field-top"><strong>ABV</strong><small>Hacimce alkol oranı</small></span>
+              <div class="input-with-unit">
+                <input name="abv" type="number" min="0" max="100" step="0.1" value="5.0" required />
+                <span>%</span>
+              </div>
+            </label>
+            <label class="field">
+              <span class="field-top"><strong>pH</strong><small>Biranın asitlik seviyesi</small></span>
+              <input name="ph" type="number" min="0" max="14" step="0.01" value="4.20" required />
+            </label>
+            <label class="field">
+              <span class="field-top"><strong>IBU</strong><small>Biranın acılık derecesi</small></span>
+              <input name="ibu" type="number" min="0" max="1000" step="0.1" value="35" required />
+            </label>
+          </div>
+
+          <button type="submit" {{ '' if model_ready else 'disabled' }}>
+            <span>Tahmin et</span><span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <div id="error-message" class="message error" role="alert" hidden></div>
+
+        <section id="result" class="result" aria-live="polite" hidden>
+          <div>
+            <p class="step">02 / Model sonucu</p>
+            <p class="result-label">Tahmin edilen sınıf</p>
+            <h3 id="class-name">—</h3>
+          </div>
+          <div class="confidence">
+            <span id="confidence-value">—</span>
+            <small>güven oranı</small>
+          </div>
+          <div id="probability-list" class="probability-list"></div>
+        </section>
+      </section>
+
+      <footer>
+        <span>BEER CLASSIFIER</span>
+        <span>PyTorch × FastAPI</span>
+      </footer>
+    </main>
+    <script src="{{ url_for('static', path='/app.js') }}" defer></script>
+  </body>
+</html>
